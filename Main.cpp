@@ -42,6 +42,7 @@ int main() {
 	al_install_mouse();
 	al_init_primitives_addon();
 	al_init_image_addon();
+	al_install_keyboard();
 
 	// Crea la ventana
 	ventana = al_create_display(ancho, alto);
@@ -67,20 +68,25 @@ int main() {
 	al_register_event_source(event_queue, al_get_timer_event_source(segundoTimer));
 	al_register_event_source(event_queue, al_get_timer_event_source(FPS));
 	al_register_event_source(event_queue, al_get_mouse_event_source());
+	al_register_event_source(event_queue, al_get_keyboard_event_source());
 
 	// Inicia el timer
 	al_start_timer(segundoTimer);
 	al_start_timer(FPS);
 	int segundo = 0;
 	int x = -1, y = -1;
-	int botones [] = {0, 0, 0};
+	// Botones menu
+	int botones[] = {0};
+	botones[0] = 0;
 
 	// Ciclo del menu
 	while (true)
 	{
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(event_queue, &evento);
-		
+
+
+		/*
 		// Evento segundos
 		if (evento.type == ALLEGRO_EVENT_TIMER)
 		{
@@ -89,12 +95,17 @@ int main() {
 				segundo++;
 			}
 		}
+		*/
+
+
 		// Limpia la pantalla
 		al_clear_to_color(al_map_rgb(0, 0, 0));
 
 		// Fondo del menu
 		al_draw_bitmap(fondoMenu, 0, 0, 0);
 
+
+		/*
 		// Creacion de botones y sus respectivas funciones
 		if (evento.type == ALLEGRO_EVENT_MOUSE_AXES || evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
 		{
@@ -117,7 +128,7 @@ int main() {
 
 			if (x >= 265 && x <= 435 && y >= 400 && y <= 450)
 			{
-				botones[1] = 1;
+				botones[0] = 2;
 				if (evento.mouse.button & 1)
 				{
 					jugar_Intermedio();
@@ -125,12 +136,12 @@ int main() {
 			}
 			else
 			{
-				botones[1] = 0;
+				botones[0] = 2;
 			}
 
 			if (x >= 475 && x <= 625 && y >= 400 && y <= 450)
 			{
-				botones[2] = 1;
+				botones[0] = 3;
 				if (evento.mouse.button & 1)
 				{
 					jugar_Experto();
@@ -138,12 +149,14 @@ int main() {
 			}
 			else
 			{
-				botones[2] = 0;
+				botones[0] = 3;
 			}
 		}
-		 
+		 */
+
+
 		// Cambio de color de los botones al pasar sobre ellos
-		if (botones[0])
+		if (botones[0] == 1)
 		{
 			al_draw_filled_rectangle(75, 400, 225, 450, verde);
 			al_draw_text(starStoneTexto, negro, 104, 395, NULL, "Inicial");
@@ -154,7 +167,7 @@ int main() {
 			al_draw_text(starStoneTexto, negro, 104, 395, NULL, "Inicial");
 		}
 
-		if (botones[1])
+		if (botones[0] == 2)
 		{
 			al_draw_filled_rectangle(265, 400, 435, 450, amarillo);
 			al_draw_text(starStoneTexto, negro, 267, 395, NULL, "Intermedio");
@@ -165,7 +178,7 @@ int main() {
 			al_draw_text(starStoneTexto, negro, 267, 395, NULL, "Intermedio");
 		}
 
-		if (botones[2])
+		if (botones[0] == 3)
 		{
 			al_draw_filled_rectangle(475, 400, 625, 450, rojo);
 			al_draw_text(starStoneTexto, negro, 495, 395, NULL, "Experto");
@@ -183,6 +196,57 @@ int main() {
 		// Printea Elija dificultad
 		al_draw_text(starStoneTexto, blanco, 250, 250, NULL, "Elija dificultad");
 		
+		// Eventos del teclado
+		if (evento.type == ALLEGRO_EVENT_KEY_DOWN)
+		{
+			switch (evento.keyboard.keycode)
+			{
+				case ALLEGRO_KEY_LEFT: {
+
+					int operacion = (botones[0] - 1) % 4;
+					botones[0] = operacion == 0? 3 : operacion;
+
+					cout << botones[0] << endl;
+						break;
+				}
+				case ALLEGRO_KEY_RIGHT: {
+					int operacion = (botones[0] + 1) % 4;
+					botones[0] = operacion == 0? 1 : operacion;
+
+					cout << botones[0] << endl;
+					break;
+				}
+
+				case ALLEGRO_KEY_ENTER:
+				{
+					if (botones[0] == 1) {
+						jugar_Inicial();
+					}
+					if (botones[0] == 2) {
+						jugar_Intermedio();
+					}
+					if (botones[0] == 3) {
+						jugar_Experto();
+					}
+				}
+				case ALLEGRO_KEY_PAD_ENTER:
+				{
+					if (botones[0] == 1) {
+						jugar_Inicial();
+					}
+					if (botones[0] == 2) {
+						jugar_Intermedio();
+					}
+					if (botones[0] == 3) {
+						jugar_Experto();
+					}
+				}
+
+				default:
+					break;
+			}
+		}
+
 		// Printea el timer
 		//al_draw_text(evilEmpire, al_map_rgb(255, 255, 255), (ancho/2) - 10, 0, NULL, (to_string(segundo)).c_str());
 
@@ -192,12 +256,43 @@ int main() {
 	return 0;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int jugar_Inicial() {
 
 	// Cambia las dimensiones de la ventana
 	ancho = 900;
 	alto = 700;
 	ventana = al_create_display(ancho, alto);
+	cout << "Inicial" << endl;
+
 
 	while (true)
 	{
@@ -210,7 +305,6 @@ int jugar_Inicial() {
 
 		al_flip_display();
 	}
-
 	return 0;
 }
 
@@ -220,6 +314,7 @@ int jugar_Intermedio() {
 	ancho = 900;
 	alto = 700;
 	ventana = al_create_display(ancho, alto);
+	cout << "Intermedio" << endl;
 
 	while (true)
 	{
@@ -242,6 +337,7 @@ int jugar_Experto() {
 	ancho = 900;
 	alto = 700;
 	ventana = al_create_display(ancho, alto);
+	cout << "Experto" << endl;
 
 	while (true)
 	{
