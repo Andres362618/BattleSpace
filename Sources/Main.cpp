@@ -7,8 +7,7 @@
 #include <string>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
-#include <stdlib.h>
-#include <conio.h>
+#include <allegro5/allegro_audio.h>
 
 // Nombre de espacio a utiizar
 using namespace std;
@@ -17,7 +16,7 @@ using namespace std;
 int jugar_Inicial();
 int jugar_Intermedio();
 int jugar_Experto();
-
+void moverNave(ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_DISPLAY* display, ALLEGRO_BITMAP* objeto, float& y_pos, ALLEGRO_BITMAP* fondoInicial);
 
 // Establece los enteros para la ventana
 int ancho;
@@ -54,6 +53,7 @@ int main() {
 	al_init_image_addon();
 	al_install_keyboard();
 
+
 	// Crea la ventana
 	ventanaMenu = al_create_display(ancho, alto);
 	// Carga fuentes de texto
@@ -83,14 +83,15 @@ int main() {
 	// Inicia el timer
 	al_start_timer(segundoTimer);
 	al_start_timer(FPS);
+
+	// Inicia la musica
+	
+
 	int segundo = 0;
 	int x = -1, y = -1;
 	// Botones menu
 	unsigned int botones[] = {0};
-	botones[0] = 0;
-
-	// Musica del menu
-	
+	botones[0] = 0;	
 
 	// Ciclo del menu
 	while (true)
@@ -219,7 +220,7 @@ int main() {
 
 
 
-// cambiar tamaño de la nave y limpiar el fondo
+
 
 
 
@@ -231,9 +232,32 @@ int jugar_Inicial() {
 	alto = 500;
 	ventanaJuego = al_create_display(ancho, alto);
 
+	
+
 	// Carga fondo
-	//ALLEGRO_BITMAP* fondoInicial = al_load_bitmap("imagenes/fondoInicial.jpg");
-	ALLEGRO_BITMAP* fondoInicial = al_load_bitmap("imagenes/nave.png");
+	ALLEGRO_BITMAP* fondoInicial = al_load_bitmap("imagenes/fondoInicial.jpg");
+	al_draw_bitmap(fondoInicial, 0, 0, 0);
+
+
+	// Nombra la ventana
+	al_set_window_title(ventanaJuego, "Battlespace Inicial");
+
+
+
+	al_init();
+	al_install_keyboard();
+
+	ALLEGRO_BITMAP* nave = al_load_bitmap("imagenes/nave.png");
+	float y_pos = 200;
+	ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
+	al_register_event_source(queue, al_get_display_event_source(ventanaJuego));
+
+	// Pone el fondo
+
+	moverNave(queue, ventanaJuego, nave, y_pos, fondoInicial);
+
+
+
 
 	while (true)
 	{
@@ -241,10 +265,7 @@ int jugar_Inicial() {
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(event_queue, &evento);
 
-		// Limpia la pantalla
-		al_clear_to_color(negro);
-		// Pone el fondo
-		al_draw_bitmap(fondoInicial, 0, 0, 0);
+		
 
 		// Detecion de botones
 		switch (evento.keyboard.keycode)
@@ -256,6 +277,7 @@ int jugar_Inicial() {
 
 		al_flip_display();
 	}
+
 	return 0;
 }
 
@@ -276,6 +298,9 @@ int jugar_Intermedio() {
 
 	// Carga fondo
 	ALLEGRO_BITMAP* fondoIntermedio = al_load_bitmap("imagenes/fondoIntermedio.jpg");
+
+	// Nombra la ventana
+	al_set_window_title(ventanaJuego, "Battlespace Intermedio");
 
 	while (true)
 	{
@@ -318,6 +343,10 @@ int jugar_Experto() {
 	ventanaJuego = al_create_display(ancho, alto);
 	// Carga fondo
 	ALLEGRO_BITMAP* fondoExperto = al_load_bitmap("imagenes/fondoExperto.jpg");
+
+	// Nombra la ventana
+	al_set_window_title(ventanaJuego, "Battlespace Experto");
+
 	while (true)
 	{
 		// Se prepara para nuevos eventos
@@ -341,4 +370,62 @@ int jugar_Experto() {
 	}
 
 	return 0;
+}
+
+
+
+
+
+
+
+
+
+// Función para mover la nave
+void moverNave(ALLEGRO_EVENT_QUEUE* queue, ALLEGRO_DISPLAY* display, ALLEGRO_BITMAP* objeto, float& y_pos, ALLEGRO_BITMAP* fondoInicial) {
+	// Variables para controlar la velocidad y dirección del movimiento
+	float velocidad = 5.0f;
+	int direccion = 0;
+
+	// Registramos los eventos de teclado en la cola de eventos
+	al_register_event_source(queue, al_get_keyboard_event_source());
+
+	// Bucle principal de la función
+	while (true) {
+		// Obtenemos el siguiente evento de la cola
+		ALLEGRO_EVENT event;
+		al_wait_for_event(queue, &event);
+
+		// Si el evento es de teclado, comprobamos la tecla pulsada
+		if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+			switch (event.keyboard.keycode) {
+			case ALLEGRO_KEY_W:
+				direccion = -1;
+				break;
+			case ALLEGRO_KEY_S:
+				direccion = 1;
+				break;
+			}
+		}
+		// Si el evento es de liberación de tecla, detenemos el movimiento
+		else if (event.type == ALLEGRO_EVENT_KEY_UP) {
+			switch (event.keyboard.keycode) {
+			case ALLEGRO_KEY_W:
+			case ALLEGRO_KEY_S:
+				direccion = 0;
+				break;
+			}
+		}
+		// Si el evento es de cierre de la ventana, salimos de la función
+		else if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+			return;
+		}
+
+		// Actualizamos la posición del objeto en función de la dirección y velocidad
+		y_pos += direccion * velocidad;
+
+		// Dibujamos el objeto en la nueva posición
+		al_draw_bitmap(fondoInicial, 0, 0, 0);
+		al_draw_bitmap(objeto, 0, y_pos, 0);
+		al_flip_display();
+	}
 }
