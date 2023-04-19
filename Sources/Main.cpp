@@ -1,16 +1,14 @@
 // Importa librerias
 #include <iostream>
 #include <allegro5/allegro.h>
-#include <allegro5/allegro_native_dialog.h>
-#include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
-#include <string>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
-#include <allegro5/allegro_audio.h>
 
 // Importa otros documentos de las clases
 #include "Nave.h"
+#include "Bala.h"
+#include "Enemigo.h"
 
 // Nombre de espacio a utiizar
 using namespace std;
@@ -73,10 +71,6 @@ int main() {
 
 	// Registro de eventos
 	al_register_event_source(event_queue, al_get_keyboard_event_source());
-
-
-	// Inicia la musica
-	
 
 	// Botones menu
 	unsigned int botones[] = {0};
@@ -181,7 +175,9 @@ int main() {
 						// Inicia el juego
 						jugar_Experto();
 					}
+					break;
 				}
+
 				case ALLEGRO_KEY_PAD_ENTER:
 				{
 					if (botones[0] == 1) {
@@ -211,10 +207,8 @@ int main() {
 						// Inicia el juego
 						jugar_Experto();
 					}
-				}
-
-				default:
 					break;
+				}
 			}
 		}
 		// Pinta todo el pantalla
@@ -243,9 +237,21 @@ int jugar_Inicial() {
 	ancho = 800;
 	alto = 500;
 	ventanaJuego = al_create_display(ancho, alto);
+	
+	ALLEGRO_TIMER* FPS = al_create_timer(1.0 / 60);
+	ALLEGRO_TIMER* cadencia = al_create_timer(1.0);
+	ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();	
+
+	al_register_event_source(queue, al_get_keyboard_event_source());
+	al_register_event_source(queue, al_get_timer_event_source(FPS));
+	al_register_event_source(queue, al_get_timer_event_source(cadencia));
+
+	al_start_timer(FPS);
+	al_start_timer(cadencia);
 
 	Nave* nave = new Nave();
-	
+	Enemigo* n = new Enemigo(700, 0);
+
 	// Carga fondo
 	ALLEGRO_BITMAP* fondoInicial = al_load_bitmap("imagenes/fondoInicial.jpg");
 
@@ -256,18 +262,82 @@ int jugar_Inicial() {
 	al_init();
 	al_install_keyboard();
 
-	// Pinta el fondo
-	al_draw_bitmap(fondoInicial, 0, 0, 0);
+	bool play = true;
+	int n_balas = 10;
 
-	// Llama a mover la nave
-	//Nave(queue, ventanaJuego, y_pos, fondoInicial);
-	while (true)
+	while (play)
 	{
-		nave->mov(fondoInicial);
+		al_draw_bitmap(fondoInicial, 0, 0, 0);
 
-		// Pinta todo en pantalla
+		// Obtenemos el siguiente evento de la cola
+		ALLEGRO_EVENT event;
+		al_wait_for_event(queue, &event);
+
+		// Llamado para disparar de manera automatica
+		if (event.type == ALLEGRO_EVENT_TIMER)
+		{
+			if (n_balas > 0)
+			{
+				// Llama a la funcion disparar para agregar una nueva bala a la lista
+				if (event.timer.source == cadencia)
+				{
+					cout << n_balas << endl;
+					nave->disparar();
+					n_balas--;
+				}
+			}
+			// Hace que la bala se mueva a 60 FPS
+			if (event.timer.source == FPS)
+			{
+				for (list<Bala*>::iterator it = balas.begin(); it != balas.end(); it++)
+				{
+					Bala* b = *it;
+					b->mov();
+				}
+			}
+			
+		}
+
+		// Revisa que se presione alguna tecla
+		if (event.type == ALLEGRO_EVENT_KEY_DOWN)
+		{
+			switch (event.keyboard.keycode)
+			{
+			case ALLEGRO_KEY_W:
+				nave->mov_up();
+				break;
+			case ALLEGRO_KEY_S:
+				nave->mov_down();
+				break;
+			case ALLEGRO_KEY_ESCAPE:
+				play = false;
+			}
+		}
+
+		// Revisa que se deje de presionar alguna tecla
+		if (event.type == ALLEGRO_EVENT_KEY_UP)
+		{
+			switch (event.keyboard.keycode)
+			{
+			case ALLEGRO_KEY_W:
+				nave->mov_stop();
+				break;
+			case ALLEGRO_KEY_S:
+				nave->mov_stop();
+				break;
+			}
+		}
+
+		n->action();
+
+		// Pinta el fondo
+		nave->draw();
 		al_flip_display();
 	}
+
+	al_destroy_event_queue(queue);
+	al_destroy_display(ventanaJuego);
+	al_destroy_bitmap(fondoInicial);
 	
 	return 0;
 }
