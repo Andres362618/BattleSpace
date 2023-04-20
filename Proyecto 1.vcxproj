@@ -159,6 +159,7 @@
     <ClCompile Include="Sources\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Sources\Alarm.h" />
     <ClInclude Include="Sources\Bala.h" />
     <ClInclude Include="Sources\Enemigo.h" />
     <ClInclude Include="Sources\Nave.h" />

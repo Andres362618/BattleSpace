@@ -64,7 +64,7 @@ void Nave::draw()
 
 void Nave::disparar()
 {
-	balas.push_back(new Bala(x, y)); // Agrega una nueva bala a la lista
+	balas.push_back(new Bala(x, y, 0)); // Agrega una nueva bala a la lista
 }
 
 Nave::~Nave()

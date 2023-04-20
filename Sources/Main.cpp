@@ -4,11 +4,14 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
+#include <math.h>
+#include <list>
 
 // Importa otros documentos de las clases
 #include "Nave.h"
 #include "Bala.h"
 #include "Enemigo.h"
+#include "Alarm.h"
 
 // Nombre de espacio a utiizar
 using namespace std;
@@ -17,11 +20,14 @@ using namespace std;
 int jugar_Inicial();
 int jugar_Intermedio();
 int jugar_Experto();
+void crear();
+void enemigo_action();
 
 // Establece los enteros para la ventana
 int ancho;
 int alto;
 
+// Prepara ventana, fuentes y cola de eventos
 ALLEGRO_DISPLAY* ventanaMenu;
 ALLEGRO_DISPLAY* ventanaJuego;
 ALLEGRO_FONT* starStoneTitulo;
@@ -35,6 +41,8 @@ ALLEGRO_COLOR negro = al_map_rgb(0, 0, 0);
 ALLEGRO_COLOR verde = al_map_rgb(0, 255, 0);
 ALLEGRO_COLOR amarillo = al_map_rgb(255, 255, 0);
 ALLEGRO_COLOR rojo = al_map_rgb(255, 0, 0);
+
+Alarm* Timer = new Alarm();
 
 // Funcion main
 int main() {
@@ -250,7 +258,6 @@ int jugar_Inicial() {
 	al_start_timer(cadencia);
 
 	Nave* nave = new Nave();
-	Enemigo* n = new Enemigo(700, 0);
 
 	// Carga fondo
 	ALLEGRO_BITMAP* fondoInicial = al_load_bitmap("imagenes/fondoInicial.jpg");
@@ -263,11 +270,16 @@ int jugar_Inicial() {
 	al_install_keyboard();
 
 	bool play = true;
-	int n_balas = 10;
+	int n_balas = 0;
+
+	srand(time(NULL)); // Hace que los numeros sean aleatorios
 
 	while (play)
 	{
 		al_draw_bitmap(fondoInicial, 0, 0, 0);
+
+		crear();
+		enemigo_action();
 
 		// Obtenemos el siguiente evento de la cola
 		ALLEGRO_EVENT event;
@@ -311,6 +323,7 @@ int jugar_Inicial() {
 				break;
 			case ALLEGRO_KEY_ESCAPE:
 				play = false;
+				break;
 			}
 		}
 
@@ -327,8 +340,6 @@ int jugar_Inicial() {
 				break;
 			}
 		}
-
-		n->action();
 
 		// Pinta el fondo
 		nave->draw();
@@ -431,4 +442,48 @@ int jugar_Experto() {
 	}
 
 	return 0;
+}
+
+
+
+
+void crear()
+{
+	static int cont = 0; // Enemigos creados
+	static int type = rand()%3; // Crea un numero random entre el 0 y el 2
+
+
+	if (cont < 5)
+	{
+		if (Timer->alarm(180))
+		{
+			oleada.push_back(new Enemigo(850, 350, type)); // Crea un enemigo random
+			cont++;
+		}
+	}
+	else
+	{
+		if (Timer->alarm(290))
+		{
+			cont = 0; // Reinicia el contador
+			type = rand()%3; // Crea un numero random entre el 0 y el 2
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+void enemigo_action()
+{
+	for (list<Enemigo*>::iterator it = oleada.begin(); it != oleada.end(); it++)
+	{
+		Enemigo* b = *it;
+		b->action();
+	}
 }

@@ -9,22 +9,24 @@ public:
 	// Variables
 	int x;
 	int y;
+	int type;
 	float velocidad;
 	ALLEGRO_BITMAP* bala;
 
 	// Funciones
 	void mov();
-	Bala(int x, int y);
+	Bala(int x, int y, int type);
 	~Bala();
 };
 
 list<Bala*> balas;
 
-Bala::Bala(int x, int y)
+Bala::Bala(int x, int y, int type)
 {
 	this->x = x;
 	this->y = y;
 	bala = al_load_bitmap("imagenes/bala.png");
+	this->type = type;
 }
 
 void Bala::mov()
@@ -44,5 +46,5 @@ void Bala::mov()
 
 Bala::~Bala()
 {
-	
+	//balas.remove(this);
 }

@@ -32,5 +32,8 @@
     <ClInclude Include="Sources\Enemigo.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\Alarm.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
