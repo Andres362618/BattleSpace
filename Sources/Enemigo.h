@@ -50,7 +50,7 @@ Enemigo::Enemigo(int x, int y, int type)
 {
 	this->x = x;
 	this->y = y;
-	this->enemigo = al_load_bitmap("imagenes/enemigo.png");
+	this->enemigo = type == 0 ? al_load_bitmap("imagenes/enemigo.png") : type == 1 ? al_load_bitmap("imagenes/enemigo2.png") : al_load_bitmap("imagenes/enemigo3.png");
 	this->alarm = new Alarm[15]();
 	this->type = type;
 	this->cont = 1;
