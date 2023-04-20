@@ -15,6 +15,7 @@ public:
 	// Variables
 	int x;
 	int y;
+	int y_n;
 	float velocidad;
 	int direccion;
 	int alto = 500;
@@ -26,19 +27,20 @@ public:
 	void mov_stop();
 	void disparar();
 	void draw();
-	Nave();
+	int get_y();
+	Nave(int speed);
 };
 
 /**
  * Constructor de la clase Nave.
  * 
  */
-Nave::Nave()
+Nave::Nave(int speed)
 {
 	x = 0;
 	y = 200;
 	nave = al_load_bitmap("imagenes/nave.png");
-	velocidad = 10.0f;
+	velocidad = 5.0f * speed;
 }
 
 /**
@@ -103,5 +105,11 @@ void Nave::draw()
  */
 void Nave::disparar()
 {
-	balas.push_back(new Bala(x, y, 0)); // Agrega una nueva bala a la lista
+	balas.push_back(new BulletCollector(x, y, 1)); // Agrega una nueva bala a la lista
+}
+
+int Nave::get_y()
+{
+	y_n = x;
+	return y_n;
 }

@@ -16,16 +16,16 @@ public:
 	// Variables
 	double x;
 	double y;
-	int type;
+	int type_e;
 	double cont;
 	int direccion = 1;
 	int vida;
 	ALLEGRO_BITMAP* enemigo;
 
 	// Funciones
-	void action();
-	void movimiento();
-	Enemigo(int x, int y, int type);
+	void action(int power, float mod_speed);
+	void movimiento(float mod_speed);
+	Enemigo(int x, int y, int type_e, float mod_vida);
 	~Enemigo();
 
 	// Objetos
@@ -44,17 +44,17 @@ list<Enemigo*> oleada;
  * 
  * \param x
  * \param y
- * \param type
+ * \param type_e
  */
-Enemigo::Enemigo(int x, int y, int type)
+Enemigo::Enemigo(int x, int y, int type, float mod_vida)
 {
 	this->x = x;
 	this->y = y;
 	this->enemigo = type == 0 ? al_load_bitmap("imagenes/enemigo.png") : type == 1 ? al_load_bitmap("imagenes/enemigo2.png") : al_load_bitmap("imagenes/enemigo3.png");
 	this->alarm = new Alarm[15]();
-	this->type = type;
+	this->type_e = type;
 	this->cont = 1;
-	this->vida = 100;
+	this->vida = 150 * mod_vida;
 }
 
 /**
@@ -74,23 +74,23 @@ Enemigo::~Enemigo()
  * Encargada de manejar las acciones de los enemigos
  * 
  */
-void Enemigo::action()
+void Enemigo::action(int power, float mod_speed)
 {
 	// Dibuja al enemigo
 	al_draw_bitmap(this->enemigo, x, y, 0);
 
 	// Colisiones
-	for (list<Bala*>::iterator it = balas.begin(); it != balas.end(); it++)
+	for (list<BulletCollector*>::iterator it = balas.begin(); it != balas.end(); it++)
 	{
-		Bala* b = *it;
-		if (b->x >= this->x and b->x <= this->x+100 and b->y >= this->y and b->y <= this->y+55)
+		BulletCollector* b = *it;
+		if (b->x_b >= this->x and b->x_b <= this->x+100 and b->y_b >= this->y and b->y_b <= this->y+55)
 		{
-			b->x = 2000;
-			this->vida -= 50;
+			b->x_b = 2000;
+			this->vida -= (50 * 1/b->type_b) * power;
 		}
 	}
 
-	this->movimiento();
+	this->movimiento(mod_speed);
 
 	if (this->vida <= 0)
 	{
@@ -104,27 +104,27 @@ void Enemigo::action()
  * Encargada de los patrones de movimiento de los enemigos
  * 
  */
-void Enemigo::movimiento()
+void Enemigo::movimiento(float mod_speed)
 {
-	switch (this->type)
+	switch (this->type_e)
 	{
 	case 0:
 		if (this->alarm[0].alarm(1))
 		{
-			x -= 20;
+			x -= 20 * mod_speed;
 		}
 		break;
 	case 1:
 		if (this->alarm[0].alarm(1))
 		{
-			x -= 10;
+			x -= 10 * mod_speed;
 			y += cos(x / 50) * 10;
 		}
 		break;
 	case 2:
 		if (this->alarm[0].alarm(1))
 		{
-			x -= 5;
+			x -= 5 * mod_speed;
 
 			if (y <= 0)
 			{

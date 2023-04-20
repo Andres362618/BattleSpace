@@ -1,6 +1,7 @@
 #pragma once
 #include <allegro5/allegro.h>
 #include <list>
+#include "Nave.h"
 using namespace std;
 
 /**
@@ -9,25 +10,25 @@ using namespace std;
  * Encargada de manejar los aspectos correspondientes a la bala
  * 
  */
-class Bala
+class BulletCollector
 {
 public:
 	// Variables
-	int x;
-	int y;
-	int type;
+	int x_b;
+	int y_b;
+	int type_b;
 	float velocidad;
 	ALLEGRO_BITMAP* bala;
 
 	// Funciones
 	void mov();
-	Bala(int x, int y, int type);
-	~Bala();
+	void BulletCollector_collector(int x_b, int y_b, int type_b);
+	BulletCollector(int x, int y, int type_b);
 };
 /**
  * Lista de balas.
  */
-list<Bala*> balas;
+list<BulletCollector*> balas;
 
 /**
  * Funcion contructora del objetos bala.
@@ -36,12 +37,12 @@ list<Bala*> balas;
  * \param y
  * \param type
  */
-Bala::Bala(int x, int y, int type)
+BulletCollector::BulletCollector(int x, int y, int type_b)
 {
-	this->x = x;
-	this->y = y;
+	this->x_b = x;
+	this->y_b = y;
 	bala = al_load_bitmap("imagenes/bala.png");
-	this->type = type;
+	this->type_b = type_b;
 }
 
 /**
@@ -49,30 +50,39 @@ Bala::Bala(int x, int y, int type)
  * 
  * Encargada del movimiento de las balas
  * 
- * \param
+ * \param velocidad
  */
-void Bala::mov()
+void BulletCollector::mov()
 {
 	velocidad = 10.0f;
 	
-	if (x < 800)
+	if (x_b < 800)
 	{
-		x += velocidad;
+		x_b += velocidad;
 	}
-	else
+	else if (x_b >= 800 and x_b <= 1000)
 	{
-		this->~Bala();
+		//this->BulletCollector(x_b, y_b, this->type_b);
 	}
-	al_draw_bitmap(this->bala, x, y, 0);
+	al_draw_bitmap(this->bala, x_b, y_b, 0);
 }
 
 /**
- * Funcion ~Bala.
+ * Funcion BulletCollector_collector.
  * 
- * Funcion encargada de llamar a Bullet Collector
+ * Funcion encargada de colectar las balas
  * 
  */
-Bala::~Bala()
+void BulletCollector::BulletCollector_collector(int x, int y, int type)
 {
-	//balas.remove(this);
+	/*
+	Nave* n = nullptr;
+	int y_n = n->get_y();
+	*/
+
+	this->type_b = type_b++;
+	this->x_b = 0;
+	this->y_b = y;
+
+	cout << 50 * 1 / type << endl;
 }
