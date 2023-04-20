@@ -3,6 +3,12 @@
 #include "Bala.h"
 using namespace std;
 
+/**
+ * Clase Nave.
+ * 
+ * Contiene todas las funciones respectivas a la nave
+ * 
+ */
 class Nave
 {
 public:
@@ -21,9 +27,12 @@ public:
 	void disparar();
 	void draw();
 	Nave();
-	~Nave();
 };
 
+/**
+ * Constructor de la clase Nave.
+ * 
+ */
 Nave::Nave()
 {
 	x = 0;
@@ -32,21 +41,45 @@ Nave::Nave()
 	velocidad = 10.0f;
 }
 
+/**
+ * Clase mov up.
+ * 
+ * Encargada del movimiento hacia arriba
+ * 
+ */
 void Nave::mov_up()
 {
 	direccion = -1;
 }
 
+/**
+ * Clase mov down.
+ * 
+ * Encargada del movimiento hacia abajo
+ * 
+ */
 void Nave::mov_down()
 {
 	direccion = 1;
 }
 
+/**
+ * Clase mov stop.
+ * 
+ * Encargada de detener el movimiento
+ * 
+ */
 void Nave::mov_stop()
 {
 	direccion = 0;
 }
 
+/**
+ * Clase draw.
+ * 
+ * Encargada de pintar la nave en pantalla, modificar la y y evitar que salga de pantalla
+ * 
+ */
 void Nave::draw()
 {
 	// Dibujamos el objeto en la nueva posición
@@ -62,12 +95,13 @@ void Nave::draw()
 	al_draw_bitmap(nave, x, y, 0);
 }
 
+/**
+ * Clase disparar.
+ * 
+ * Encargada de añadir balas a la lista de balas
+ * 
+ */
 void Nave::disparar()
 {
 	balas.push_back(new Bala(x, y, 0)); // Agrega una nueva bala a la lista
-}
-
-Nave::~Nave()
-{
-
 }

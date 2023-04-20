@@ -5,6 +5,11 @@
 #include "Alarm.h"
 using namespace std;
 
+/**
+ * Clase enemigo.
+ * 
+ * Clase encargada de manejar lo relacionado con los enemigos
+ */
 class Enemigo
 {
 public:
@@ -27,8 +32,20 @@ public:
 	Alarm* alarm;
 };
 
+/**
+ * Lista de oleadas.
+ */
 list<Enemigo*> oleada;
 
+/**
+ * Funcion enemigo.
+ * 
+ * Constructor de los enemigos
+ * 
+ * \param x
+ * \param y
+ * \param type
+ */
 Enemigo::Enemigo(int x, int y, int type)
 {
 	this->x = x;
@@ -40,12 +57,23 @@ Enemigo::Enemigo(int x, int y, int type)
 	this->vida = 100;
 }
 
-
+/**
+ * Funcion ~Enemigo.
+ * 
+ * Encargada de eliminar los enemigos de pantalla
+ * 
+ */
 Enemigo::~Enemigo()
 {
 	this->x = -200;
 }
 
+/**
+ * Funcion action.
+ * 
+ * Encargada de manejar las acciones de los enemigos
+ * 
+ */
 void Enemigo::action()
 {
 	// Dibuja al enemigo
@@ -70,6 +98,12 @@ void Enemigo::action()
 	}
 }
 
+/**
+ * Funcion movimiento.
+ * 
+ * Encargada de los patrones de movimiento de los enemigos
+ * 
+ */
 void Enemigo::movimiento()
 {
 	switch (this->type)

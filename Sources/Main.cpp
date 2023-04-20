@@ -1,4 +1,15 @@
-// Importa librerias
+
+/*****************************************************************//**
+ * \file   Main.cpp
+ * \version 1.0  
+ * 
+ * \author Andrés Madrigal Vega, Claudio Arce Cascante y Julia Harlander
+ * \date   20, April, 2023
+ *********************************************************************/
+
+/**
+ * Importa librerias
+ */
 #include <iostream>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_ttf.h>
@@ -7,27 +18,37 @@
 #include <math.h>
 #include <list>
 
-// Importa otros documentos de las clases
+/**
+ * Importa otros documentos de las clases.
+ */
 #include "Nave.h"
 #include "Bala.h"
 #include "Enemigo.h"
 #include "Alarm.h"
 
-// Nombre de espacio a utiizar
+/**
+ * Nombre de espacio a utiizar.
+ */
 using namespace std;
 
-// Inicia las funciones
+/**
+ * Inicia las funciones.
+ */
 int jugar_Inicial();
 int jugar_Intermedio();
 int jugar_Experto();
 void crear();
 void enemigo_action();
 
-// Establece los enteros para la ventana
+/**
+ * Establece los enteros para la ventana.
+ */
 int ancho;
 int alto;
 
-// Prepara ventana, fuentes y cola de eventos
+/**
+ * Prepara ventana, fuentes y cola de eventos.
+ */
 ALLEGRO_DISPLAY* ventanaMenu;
 ALLEGRO_DISPLAY* ventanaJuego;
 ALLEGRO_FONT* starStoneTitulo;
@@ -35,18 +56,32 @@ ALLEGRO_FONT* starStoneTexto;
 ALLEGRO_FONT* evilEmpire;
 ALLEGRO_EVENT_QUEUE* event_queue;
 
-// Colores
+/**
+ * Colores.
+ */
 ALLEGRO_COLOR blanco = al_map_rgb(255, 255, 255);
 ALLEGRO_COLOR negro = al_map_rgb(0, 0, 0);
 ALLEGRO_COLOR verde = al_map_rgb(0, 255, 0);
 ALLEGRO_COLOR amarillo = al_map_rgb(255, 255, 0);
 ALLEGRO_COLOR rojo = al_map_rgb(255, 0, 0);
 
+/**
+ * Crea nuevo objeto de clase alarm.
+ */
 Alarm* Timer = new Alarm();
 
+/**
+ * Crea booleano play.
+ */
 bool play = true;
 
-// Funcion main
+/**
+ * Funcion main.
+ * 
+ * Encargada de llevar a cabo las acciones relacionadas con el menu
+ * 
+ * \return 0
+ */
 int main() {
 	// Establece las medidas de la ventana
 	int ancho = 700;
@@ -89,6 +124,7 @@ int main() {
 	// Ciclo del menu
 	while (true)
 	{
+		// Se prepara para eventos
 		ALLEGRO_EVENT evento;
 		al_wait_for_event(event_queue, &evento);
 
@@ -132,7 +168,6 @@ int main() {
 			al_draw_text(starStoneTexto, negro, 495, 395, NULL, "Experto");
 		}
 
-		// Pinta elementos en la ventana
 		// Printea el nombre del juego en la ventana menu
 		al_draw_text(starStoneTitulo, blanco, 220, 40, NULL, "Battlespace");
 		
@@ -240,7 +275,19 @@ int main() {
 
 
 
-
+/**
+ * Funcion jugar inicial.
+ * 
+ * Se encarga de llevar a cabo el ciclo de juego en la dificultad inicial
+ * 
+ * \param queue
+ * \param display
+ * \param objeto
+ * \param y_pos
+ * \param fondoInicial
+ * 
+ * \return 
+ */
 int jugar_Inicial() {
 
 	// Cambia las dimensiones de la ventana
@@ -380,7 +427,17 @@ int jugar_Inicial() {
 
 
 
-
+/**
+ * Funcion jugar Intermedio.
+ * 
+ * Se encarga de llevar a cabo el ciclo de juego en la dificultad intermedia
+ * 
+ * \param queue
+ * \param display
+ * \param objeto
+ * \param y_pos
+ * \param fondoIntermedio
+ */
 int jugar_Intermedio() {
 
 	// Cambia las dimensiones de la ventana
@@ -520,7 +577,17 @@ int jugar_Intermedio() {
 
 
 
-
+/**
+ * Funcion jugar Experto.
+ * 
+ * Encargada de llevar el ciclo de juego en la dificultad Experto
+ * 
+ * \param queue
+ * \param display
+ * \param objeto
+ * \param y_pos
+ * \param fondoExperto 
+ */
 int jugar_Experto() {
 
 	// Cambia las dimensiones de la ventana
@@ -655,7 +722,12 @@ int jugar_Experto() {
 
 
 
-
+/**
+ * Funcion crear.
+ * 
+ * Encargada de crear los enemigos en sus respectivas oleadas
+ * 
+ */
 void crear()
 {
 	// Establece el numero de ronda, contador de enemigos creados y 2 numeros random para definir el tipo y pos_y del enemigo
@@ -671,7 +743,7 @@ void crear()
 		if (cont < 5)
 		{
 			// Espera para crear nuevos enemigos
-			if (Timer->alarm(150))
+			if (Timer->alarm(100))
 			{
 				oleada.push_back(new Enemigo(800, y_spawn, type)); // Crea un enemigo random
 				cont++; // Suma al contador de enemigos
@@ -680,7 +752,7 @@ void crear()
 		else
 		{
 			// Espera para crear nueva ronda
-			if (Timer->alarm(200))
+			if (Timer->alarm(150))
 			{
 				cont = 0; // Reinicia el contador
 				ronda++; // Suma ronda
@@ -692,8 +764,8 @@ void crear()
 	else
 	{
 		// Termina el juego
-		cout << "End Game" << endl;
-		play = false;
+		al_draw_text(starStoneTitulo, blanco, 300, 60, NULL, "Victoria!");
+
 	}
 }
 
@@ -704,7 +776,12 @@ void crear()
 
 
 
-// Funcion para las acciones de los enemigos
+/**
+ * Funcion enemigo action.
+ * 
+ * Encargada de llevar a cabo las acciones realizadas por los enemigos
+ * 
+ */
 void enemigo_action()
 {
 	// Recorre la lista de los enemigos

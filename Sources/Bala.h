@@ -3,6 +3,12 @@
 #include <list>
 using namespace std;
 
+/**
+ * Clase bala.
+ * 
+ * Encargada de manejar los aspectos correspondientes a la bala
+ * 
+ */
 class Bala
 {
 public:
@@ -18,9 +24,18 @@ public:
 	Bala(int x, int y, int type);
 	~Bala();
 };
-
+/**
+ * Lista de balas.
+ */
 list<Bala*> balas;
 
+/**
+ * Funcion contructora del objetos bala.
+ * 
+ * \param x
+ * \param y
+ * \param type
+ */
 Bala::Bala(int x, int y, int type)
 {
 	this->x = x;
@@ -29,6 +44,13 @@ Bala::Bala(int x, int y, int type)
 	this->type = type;
 }
 
+/**
+ * Funcion mov.
+ * 
+ * Encargada del movimiento de las balas
+ * 
+ * \param
+ */
 void Bala::mov()
 {
 	velocidad = 10.0f;
@@ -44,6 +66,12 @@ void Bala::mov()
 	al_draw_bitmap(this->bala, x, y, 0);
 }
 
+/**
+ * Funcion ~Bala.
+ * 
+ * Funcion encargada de llamar a Bullet Collector
+ * 
+ */
 Bala::~Bala()
 {
 	//balas.remove(this);

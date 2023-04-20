@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * Clase Alarm.
+ * 
+ * Encargada de manejar los tiempos del juego
+ */
 class Alarm
 {
 public:
@@ -8,11 +13,25 @@ public:
 	Alarm();
 };
 
+/**
+ * Contructor de la clase alarm.
+ * 
+ * \param cont
+ * 
+ */
 Alarm::Alarm()
 {
 	this->cont = 0;
 }
 
+/**
+ * Funcion alarm.
+ * 
+ * Encargada de manejar los tempos
+ * 
+ * \param secons
+ * \return 
+ */
 bool Alarm::alarm(int secons)
 {
 	if (secons == 0)
