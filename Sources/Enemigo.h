@@ -43,9 +43,7 @@ Enemigo::Enemigo(int x, int y, int type)
 
 Enemigo::~Enemigo()
 {
-	//oleada.remove(this);
-	//al_destroy_bitmap(this->enemigo);
-	//delete[] alarm;
+	this->x = -200;
 }
 
 void Enemigo::action()
@@ -59,7 +57,7 @@ void Enemigo::action()
 		Bala* b = *it;
 		if (b->x >= this->x and b->x <= this->x+100 and b->y >= this->y and b->y <= this->y+55)
 		{
-			//delete b;
+			b->x = 2000;
 			this->vida -= 50;
 		}
 	}
@@ -68,7 +66,7 @@ void Enemigo::action()
 
 	if (this->vida <= 0)
 	{
-		this->x = -200;
+		this->~Enemigo();
 	}
 }
 
@@ -79,21 +77,20 @@ void Enemigo::movimiento()
 	case 0:
 		if (this->alarm[0].alarm(1))
 		{
-			x -= 5;
-			y += 2;
+			x -= 20;
 		}
 		break;
 	case 1:
 		if (this->alarm[0].alarm(1))
 		{
-			x -= 5;
+			x -= 10;
 			y += cos(x / 50) * 10;
 		}
 		break;
 	case 2:
 		if (this->alarm[0].alarm(1))
 		{
-			x -= 3.5;
+			x -= 5;
 
 			if (y <= 0)
 			{

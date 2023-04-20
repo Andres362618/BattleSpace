@@ -9,7 +9,7 @@ public:
 	// Variables
 	int x;
 	int y;
-	float velocidad = 5.0f;
+	float velocidad;
 	int direccion;
 	int alto = 500;
 	ALLEGRO_BITMAP* nave;
@@ -29,7 +29,7 @@ Nave::Nave()
 	x = 0;
 	y = 200;
 	nave = al_load_bitmap("imagenes/nave.png");
-
+	velocidad = 10.0f;
 }
 
 void Nave::mov_up()

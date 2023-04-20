@@ -44,6 +44,8 @@ ALLEGRO_COLOR rojo = al_map_rgb(255, 0, 0);
 
 Alarm* Timer = new Alarm();
 
+bool play = true;
+
 // Funcion main
 int main() {
 	// Establece las medidas de la ventana
@@ -244,19 +246,25 @@ int jugar_Inicial() {
 	// Cambia las dimensiones de la ventana
 	ancho = 800;
 	alto = 500;
+	// Crea ventana de juego
 	ventanaJuego = al_create_display(ancho, alto);
-	
-	ALLEGRO_TIMER* FPS = al_create_timer(1.0 / 60);
-	ALLEGRO_TIMER* cadencia = al_create_timer(1.0);
-	ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();	
 
+	// Crea timers para FPS y cadencia
+	ALLEGRO_TIMER* FPS = al_create_timer(1.0 / 60);
+	ALLEGRO_TIMER* cadencia = al_create_timer(0.5);
+	// Crea cola de eventos
+	ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
+
+	// Resgistro de eventos
 	al_register_event_source(queue, al_get_keyboard_event_source());
 	al_register_event_source(queue, al_get_timer_event_source(FPS));
 	al_register_event_source(queue, al_get_timer_event_source(cadencia));
 
+	// Inicia timers
 	al_start_timer(FPS);
 	al_start_timer(cadencia);
 
+	// Crea nuevo objeto de clase nave
 	Nave* nave = new Nave();
 
 	// Carga fondo
@@ -269,15 +277,19 @@ int jugar_Inicial() {
 	al_init();
 	al_install_keyboard();
 
-	bool play = true;
-	int n_balas = 0;
+	// Numero de balas a utilizar
+	int n_balas = 500;
 
-	srand(time(NULL)); // Hace que los numeros sean aleatorios
+	// Hace que los numeros sean aleatorios
+	srand(time(NULL));
 
+	// Ciclo principal de juego
 	while (play)
 	{
+		// Dibuja el fondo en pantalla
 		al_draw_bitmap(fondoInicial, 0, 0, 0);
 
+		// Llama a la funcion crear y enemigo_action
 		crear();
 		enemigo_action();
 
@@ -293,21 +305,25 @@ int jugar_Inicial() {
 				// Llama a la funcion disparar para agregar una nueva bala a la lista
 				if (event.timer.source == cadencia)
 				{
-					cout << n_balas << endl;
+					// Llama a la funcion disparar en la clase nave
 					nave->disparar();
+					// Resta al numero de balas
 					n_balas--;
 				}
 			}
 			// Hace que la bala se mueva a 60 FPS
 			if (event.timer.source == FPS)
 			{
+				// Recorre la lista de balas
 				for (list<Bala*>::iterator it = balas.begin(); it != balas.end(); it++)
 				{
+					// Crea objeto de tipo bala
 					Bala* b = *it;
+					// Llama a la funcion mov en la clase bala
 					b->mov();
 				}
 			}
-			
+
 		}
 
 		// Revisa que se presione alguna tecla
@@ -315,12 +331,15 @@ int jugar_Inicial() {
 		{
 			switch (event.keyboard.keycode)
 			{
+				// Registra el movimiento hacia arriba
 			case ALLEGRO_KEY_W:
 				nave->mov_up();
 				break;
+				// Registra el movimiento hacia abajo
 			case ALLEGRO_KEY_S:
 				nave->mov_down();
 				break;
+				// Registra cuando se cierra el juego
 			case ALLEGRO_KEY_ESCAPE:
 				play = false;
 				break;
@@ -341,15 +360,16 @@ int jugar_Inicial() {
 			}
 		}
 
-		// Pinta el fondo
+		// Pinta el fondo y la nave
 		nave->draw();
 		al_flip_display();
 	}
 
+	// Libera memoria utilizada
 	al_destroy_event_queue(queue);
 	al_destroy_display(ventanaJuego);
 	al_destroy_bitmap(fondoInicial);
-	
+
 	return 0;
 }
 
@@ -366,7 +386,26 @@ int jugar_Intermedio() {
 	// Cambia las dimensiones de la ventana
 	ancho = 800;
 	alto = 500;
+	// Crea ventana de juego
 	ventanaJuego = al_create_display(ancho, alto);
+
+	// Crea timers para FPS y cadencia
+	ALLEGRO_TIMER* FPS = al_create_timer(1.0 / 60);
+	ALLEGRO_TIMER* cadencia = al_create_timer(0.5);
+	// Crea cola de eventos
+	ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
+
+	// Resgistro de eventos
+	al_register_event_source(queue, al_get_keyboard_event_source());
+	al_register_event_source(queue, al_get_timer_event_source(FPS));
+	al_register_event_source(queue, al_get_timer_event_source(cadencia));
+
+	// Inicia timers
+	al_start_timer(FPS);
+	al_start_timer(cadencia);
+
+	// Crea nuevo objeto de clase nave
+	Nave* nave = new Nave();
 
 	// Carga fondo
 	ALLEGRO_BITMAP* fondoIntermedio = al_load_bitmap("imagenes/fondoIntermedio.jpg");
@@ -374,27 +413,102 @@ int jugar_Intermedio() {
 	// Nombra la ventana
 	al_set_window_title(ventanaJuego, "Battlespace Intermedio");
 
-	while (true)
-	{
-		// Se prepara para nuevos eventos
-		ALLEGRO_EVENT evento;
-		al_wait_for_event(event_queue, &evento);
+	// Inicia allegro y teclado
+	al_init();
+	al_install_keyboard();
 
-		// Limpia la pantalla
-		al_clear_to_color(negro);
-		// Pone el fondo
+	// Numero de balas a utilizar
+	int n_balas = 250;
+
+	// Hace que los numeros sean aleatorios
+	srand(time(NULL));
+
+	// Ciclo principal de juego
+	while (play)
+	{
+		// Dibuja el fondo en pantalla
 		al_draw_bitmap(fondoIntermedio, 0, 0, 0);
 
-		// Detecion de botones
-		switch (evento.keyboard.keycode)
+		// Llama a la funcion crear y enemigo_action
+		crear();
+		enemigo_action();
+
+		// Obtenemos el siguiente evento de la cola
+		ALLEGRO_EVENT event;
+		al_wait_for_event(queue, &event);
+
+		// Llamado para disparar de manera automatica
+		if (event.type == ALLEGRO_EVENT_TIMER)
 		{
-		case ALLEGRO_KEY_ESCAPE:
-			al_destroy_display(ventanaJuego);
-			main();
+			if (n_balas > 0)
+			{
+				// Llama a la funcion disparar para agregar una nueva bala a la lista
+				if (event.timer.source == cadencia)
+				{
+					// Llama a la funcion disparar en la clase nave
+					nave->disparar();
+					// Resta al numero de balas
+					n_balas--;
+				}
+			}
+			// Hace que la bala se mueva a 60 FPS
+			if (event.timer.source == FPS)
+			{
+				// Recorre la lista de balas
+				for (list<Bala*>::iterator it = balas.begin(); it != balas.end(); it++)
+				{
+					// Crea objeto de tipo bala
+					Bala* b = *it;
+					// Llama a la funcion mov en la clase bala
+					b->mov();
+				}
+			}
+
 		}
 
+		// Revisa que se presione alguna tecla
+		if (event.type == ALLEGRO_EVENT_KEY_DOWN)
+		{
+			switch (event.keyboard.keycode)
+			{
+				// Registra el movimiento hacia arriba
+			case ALLEGRO_KEY_W:
+				nave->mov_up();
+				break;
+				// Registra el movimiento hacia abajo
+			case ALLEGRO_KEY_S:
+				nave->mov_down();
+				break;
+				// Registra cuando se cierra el juego
+			case ALLEGRO_KEY_ESCAPE:
+				play = false;
+				break;
+			}
+		}
+
+		// Revisa que se deje de presionar alguna tecla
+		if (event.type == ALLEGRO_EVENT_KEY_UP)
+		{
+			switch (event.keyboard.keycode)
+			{
+			case ALLEGRO_KEY_W:
+				nave->mov_stop();
+				break;
+			case ALLEGRO_KEY_S:
+				nave->mov_stop();
+				break;
+			}
+		}
+
+		// Pinta el fondo y la nave
+		nave->draw();
 		al_flip_display();
 	}
+
+	// Libera memoria utilizada
+	al_destroy_event_queue(queue);
+	al_destroy_display(ventanaJuego);
+	al_destroy_bitmap(fondoIntermedio);
 
 	return 0;
 }
@@ -412,34 +526,129 @@ int jugar_Experto() {
 	// Cambia las dimensiones de la ventana
 	ancho = 800;
 	alto = 500;
+	// Crea ventana de juego
 	ventanaJuego = al_create_display(ancho, alto);
+
+	// Crea timers para FPS y cadencia
+	ALLEGRO_TIMER* FPS = al_create_timer(1.0 / 60);
+	ALLEGRO_TIMER* cadencia = al_create_timer(0.5);
+	// Crea cola de eventos
+	ALLEGRO_EVENT_QUEUE* queue = al_create_event_queue();
+
+	// Resgistro de eventos
+	al_register_event_source(queue, al_get_keyboard_event_source());
+	al_register_event_source(queue, al_get_timer_event_source(FPS));
+	al_register_event_source(queue, al_get_timer_event_source(cadencia));
+
+	// Inicia timers
+	al_start_timer(FPS);
+	al_start_timer(cadencia);
+
+	// Crea nuevo objeto de clase nave
+	Nave* nave = new Nave();
+
 	// Carga fondo
 	ALLEGRO_BITMAP* fondoExperto = al_load_bitmap("imagenes/fondoExperto.jpg");
 
 	// Nombra la ventana
 	al_set_window_title(ventanaJuego, "Battlespace Experto");
 
-	while (true)
-	{
-		// Se prepara para nuevos eventos
-		ALLEGRO_EVENT evento;
-		al_wait_for_event(event_queue, &evento);
+	// Inicia allegro y teclado
+	al_init();
+	al_install_keyboard();
 
-		// Limpia la pantalla
-		al_clear_to_color(negro);
-		// Pone el fondo
+	// Numero de balas a utilizar
+	int n_balas = 100;
+
+	// Hace que los numeros sean aleatorios
+	srand(time(NULL)); 
+
+	// Ciclo principal de juego
+	while (play)
+	{
+		// Dibuja el fondo en pantalla
 		al_draw_bitmap(fondoExperto, 0, 0, 0);
 
-		// Detecion de botones
-		switch (evento.keyboard.keycode)
+		// Llama a la funcion crear y enemigo_action
+		crear();
+		enemigo_action();
+
+		// Obtenemos el siguiente evento de la cola
+		ALLEGRO_EVENT event;
+		al_wait_for_event(queue, &event);
+
+		// Llamado para disparar de manera automatica
+		if (event.type == ALLEGRO_EVENT_TIMER)
 		{
-		case ALLEGRO_KEY_ESCAPE:
-			al_destroy_display(ventanaJuego);
-			main();
+			if (n_balas > 0)
+			{
+				// Llama a la funcion disparar para agregar una nueva bala a la lista
+				if (event.timer.source == cadencia)
+				{
+					// Llama a la funcion disparar en la clase nave
+					nave->disparar();
+					// Resta al numero de balas
+					n_balas--;
+				}
+			}
+			// Hace que la bala se mueva a 60 FPS
+			if (event.timer.source == FPS)
+			{
+				// Recorre la lista de balas
+				for (list<Bala*>::iterator it = balas.begin(); it != balas.end(); it++)
+				{
+					// Crea objeto de tipo bala
+					Bala* b = *it;
+					// Llama a la funcion mov en la clase bala
+					b->mov();
+				}
+			}
+
 		}
 
+		// Revisa que se presione alguna tecla
+		if (event.type == ALLEGRO_EVENT_KEY_DOWN)
+		{
+			switch (event.keyboard.keycode)
+			{
+				// Registra el movimiento hacia arriba
+			case ALLEGRO_KEY_W:
+				nave->mov_up();
+				break;
+				// Registra el movimiento hacia abajo
+			case ALLEGRO_KEY_S:
+				nave->mov_down();
+				break;
+				// Registra cuando se cierra el juego
+			case ALLEGRO_KEY_ESCAPE:
+				play = false;
+				break;
+			}
+		}
+
+		// Revisa que se deje de presionar alguna tecla
+		if (event.type == ALLEGRO_EVENT_KEY_UP)
+		{
+			switch (event.keyboard.keycode)
+			{
+			case ALLEGRO_KEY_W:
+				nave->mov_stop();
+				break;
+			case ALLEGRO_KEY_S:
+				nave->mov_stop();
+				break;
+			}
+		}
+
+		// Pinta el fondo y la nave
+		nave->draw();
 		al_flip_display();
 	}
+
+	// Libera memoria utilizada
+	al_destroy_event_queue(queue);
+	al_destroy_display(ventanaJuego);
+	al_destroy_bitmap(fondoExperto);
 
 	return 0;
 }
@@ -449,25 +658,42 @@ int jugar_Experto() {
 
 void crear()
 {
+	// Establece el numero de ronda, contador de enemigos creados y 2 numeros random para definir el tipo y pos_y del enemigo
+	static int ronda = 1;
 	static int cont = 0; // Enemigos creados
-	static int type = rand()%3; // Crea un numero random entre el 0 y el 2
+	int type = rand()%3; // Crea un numero random entre el 0 y el 2
+	int y_spawn = rand() % 445; // Crea un numero random entre el 0 y el 2
 
-
-	if (cont < 5)
+	// Revisa por cual ronda va
+	if (ronda < 6)
 	{
-		if (Timer->alarm(180))
+		// Revisa cuantos enemigos se crearon
+		if (cont < 5)
 		{
-			oleada.push_back(new Enemigo(850, 350, type)); // Crea un enemigo random
-			cont++;
+			// Espera para crear nuevos enemigos
+			if (Timer->alarm(150))
+			{
+				oleada.push_back(new Enemigo(800, y_spawn, type)); // Crea un enemigo random
+				cont++; // Suma al contador de enemigos
+			}
+		}
+		else
+		{
+			// Espera para crear nueva ronda
+			if (Timer->alarm(200))
+			{
+				cont = 0; // Reinicia el contador
+				ronda++; // Suma ronda
+				type = rand() % 3; // Crea un numero random entre el 0 y el 2
+				y_spawn = rand() % 445; // Cambia la pos_y
+			}
 		}
 	}
 	else
 	{
-		if (Timer->alarm(290))
-		{
-			cont = 0; // Reinicia el contador
-			type = rand()%3; // Crea un numero random entre el 0 y el 2
-		}
+		// Termina el juego
+		cout << "End Game" << endl;
+		play = false;
 	}
 }
 
@@ -478,12 +704,15 @@ void crear()
 
 
 
-
+// Funcion para las acciones de los enemigos
 void enemigo_action()
 {
+	// Recorre la lista de los enemigos
 	for (list<Enemigo*>::iterator it = oleada.begin(); it != oleada.end(); it++)
 	{
+		// Registra un nuevo enemigo en la lista
 		Enemigo* b = *it;
+		// Llama a la funcion action en la clase enemigo
 		b->action();
 	}
 }
